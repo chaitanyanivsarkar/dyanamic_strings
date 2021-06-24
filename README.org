@@ -1,0 +1,3 @@
+*** Dynamic Strings
+    A simple implementation of cache friendly dynamic strings using fat pointers in C
+
