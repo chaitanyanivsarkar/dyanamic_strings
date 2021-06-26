@@ -1,3 +1,30 @@
 *** Dynamic Strings
     A simple implementation of cache friendly dynamic strings using fat pointers in C
 
+This is a header only library intended to be used while solving competetive programming problems and such does not have much in the name of error handelling code, if you are looking for a better string implementation then the `text` library is a better choice, if you want a better fat pointer implementation then `sds` is a good choice.
+
+the dynamic strings created using this library are fully compatible with c-style strings as the extra length and size information is added before the c style string.
+
+**** API:
+     - ds_new(.size?, .contents?, .len?, .pos?)
+       Construct a new dynamic string all arguments are optional
+     - ds_free(string)
+       Free a dynamic string
+     - ds_append(A, B)
+       Appends string B to string A and returns A(pointer might change)
+     - ds_push(A, c)
+       appends character c at the end of A and returns A(pointer might change)
+     - ds_pop(A)
+       removes the last character from A
+     - ds_join(A, array<strings>, delim)
+       Appends delim seprated items from array to A and returns A(pointer might change)
+     - ds_length(A)
+       returns length of A
+     - ds_sizeof(A)
+       returns sizeof character array allocated for A
+     - ds_compare(A, B)
+       lexicographically compares A and B and returns 1 if A>B, 0 if A=B and -1 if A<B
+     - ds_contains(A, B)
+       returns index of first occurance of B in A, if not found returns length A
+     - ds_subst(A, begin, len)
+       returns a substring of A starting at position `begin` of length len
