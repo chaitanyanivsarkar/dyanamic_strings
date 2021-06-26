@@ -105,6 +105,7 @@ ds_push(dstr str, char c)
   if (container->size <= container->len+2) {
     container = __ds_relocate(container, 0);
   }
+  if (container == NULL) return NULL;
 
   container->contents[container->len] = c;
   container->contents[container->len+1] = '\0';
@@ -133,8 +134,9 @@ ds_append(dstr dest, const dstr cat)
     size_t fac = (dst_cont->len + cat_cont->len + 1)/16 + 1;
     fac = fac < 2 ? 2 : fac;
 
-    __ds_relocate(dst_cont, fac*dst_cont->size);
+    dst_cont = __ds_relocate(dst_cont, fac*dst_cont->size);
   }
+  if (dst_cont == NULL) return NULL;
 
   strncat(dst_cont->contents + dst_cont->len, cat_cont->contents,
 	  cat_cont->len);
@@ -147,9 +149,12 @@ ds_join(dstr dest, const dstr *str_arr, size_t len, dstr delim)
 {
   for (size_t i = 0; i < len-1; ++i) {
     dest = ds_append(dest, str_arr[i]);
+    if (dest == NULL) return NULL;
     dest = ds_append(dest, delim);
+    if (dest == NULL) return NULL;
   }
   dest = ds_append(dest, str_arr[len-1]);
+  if (dest == NULL) return NULL;
   
   return dest;
 }
@@ -166,4 +171,17 @@ ds_sizeof(dstr str)
 {
   struct ds_string *cont = get_container(str);
   return cont->size;
+}
+
+dstr
+ds_copy(dstr str)
+{
+  struct ds_string *cont = get_container(str);
+  size_t size = sizeof(struct ds_string) + sizeof(char)*cont->size;
+  struct ds_string *copy = malloc(size);
+  if (copy == NULL) return NULL;
+
+  memcpy(copy, cont, size);
+  
+  return copy->contents;
 }

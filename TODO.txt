@@ -3,7 +3,7 @@
 3. Add a function for creating dynamic string from another string -> DONE
 4. Add a function for getting length, capacity -> DONE
 5. Add function for substring matching, compare, substring 
-6. Add a function for copying
+6. Add a function for copying -> Done
 
 a. Once the testing code is mature move it to a seprate framework
 b. Move everything to one header file

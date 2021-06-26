@@ -7,7 +7,8 @@
 
 enum Tests {create=10, destroy=20, push=30,
             append=40, pop=50, join=60,
-	    length=70, capacity=80, all=0};
+	    length=70, capacity=80, copy=90,
+	    all=0};
 enum Result {SUCCESS=0, FAIL=1};
 
 int test_new_str(void);
@@ -18,6 +19,7 @@ int test_append(void);
 int test_join(void);
 int test_length(void);
 int test_capacity(void);
+int test_copy(void);
 
 enum Tests getTest(char *name)
 {
@@ -38,6 +40,8 @@ enum Tests getTest(char *name)
     return length;
   } else if (!strncmp(name, "cap", 3)) {
     return capacity;
+  } else if (!strncmp(name, "cpy", 3)) {
+    return copy;
   } else if (!strncmp(name, "non", 3)) {
     return -2;
   }
@@ -64,6 +68,8 @@ selector(enum Tests sel)
     return test_length();
   case capacity:
     return test_capacity();
+  case copy:
+    return test_copy();
   case all:
     return test_new_str() + test_free_str();
   default:
@@ -82,7 +88,8 @@ getOption(int argc, char **argv)
   if (!strncmp(argv[1], "-ap", 3)) return "app";
   if (!strncmp(argv[1], "-j", 2)) return "jon";
   if (!strncmp(argv[1], "-l", 2)) return "len";
-  if (!strncmp(argv[1], "-cp", 3)) return "cap";
+  if (!strncmp(argv[1], "-ca", 3)) return "cap";
+  if (!strncmp(argv[1], "-cp", 3)) return "cpy";
   return "non";
 }
 
@@ -198,5 +205,15 @@ test_capacity(void)
   dstr str = ds_new(.contents="hi");
   if (ds_sizeof(str) != 16) return FAIL;
 
+  return SUCCESS;
+}
+
+int
+test_copy(void)
+{
+  dstr str = ds_new(.contents="chaitanyanivsarkar");
+  dstr cp_str = ds_copy(str);
+
+  if (strncmp(str, cp_str, ds_length(str))) return FAIL;
   return SUCCESS;
 }
