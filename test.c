@@ -54,6 +54,7 @@ int main (int argc, char **argv)
     printf("test success\n");
     return 0;
   }
+  printf("test fail\n");
   return 1;
 }
 
@@ -62,6 +63,10 @@ int test_new_str() {
   char *test_contents_ctor = ds_new(.contents="hi all");
   char *test_substr_ctor = ds_new(.contents="hi all this", .len=6);
   char *test_substr_ctor1 = ds_new(.contents="hi all this", .len=3, .pos=3);
+
+  printf("%s\n", test_contents_ctor);
+  printf("%s\n", test_substr_ctor);
+  printf("%s\n", test_substr_ctor1);
 
   if (strncmp(test_contents_ctor, "hi all", 6)) return FAIL;
   if (strncmp(test_substr_ctor, "hi all", 6)) return FAIL;

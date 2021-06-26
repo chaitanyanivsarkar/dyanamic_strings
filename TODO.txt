@@ -4,3 +4,7 @@
 4. Add a function for getting length, capacity
 5. Add function for substring matching, compare, substring 
 6. Add a function for copying
+
+a. Once the testing code is mature move it to a seprate framework
+b. Add logging once mature
+c. Move everything to one header file
