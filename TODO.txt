@@ -8,3 +8,4 @@
 a. Once the testing code is mature move it to a seprate framework
 b. Add logging once mature
 c. Move everything to one header file
+d. make an array of function pointers for running all tests
