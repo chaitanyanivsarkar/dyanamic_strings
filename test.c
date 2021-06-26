@@ -6,7 +6,8 @@
 #include "ds.h"
 
 enum Tests {create=10, destroy=20, push=30,
-            append=40, pop=50, join=60, all=0};
+            append=40, pop=50, join=60,
+	    length=70, capacity=80, all=0};
 enum Result {SUCCESS=0, FAIL=1};
 
 int test_new_str(void);
@@ -15,9 +16,12 @@ int test_push(void);
 int test_pop(void);
 int test_append(void);
 int test_join(void);
+int test_length(void);
+int test_capacity(void);
 
 enum Tests getTest(char *name)
 {
+  printf("%s\n", name);
   if (!strncmp(name, "crt", 3)) {
     return create;
   } else if (!strncmp(name, "dst", 3)) {
@@ -30,6 +34,12 @@ enum Tests getTest(char *name)
     return append;
   } else if (!strncmp(name, "jon", 3)) {
     return join;
+  } else if (!strncmp(name, "len", 3)) {
+    return length;
+  } else if (!strncmp(name, "cap", 3)) {
+    return capacity;
+  } else if (!strncmp(name, "non", 3)) {
+    return -2;
   }
   return all;
 }
@@ -50,6 +60,10 @@ selector(enum Tests sel)
     return test_push();
   case pop:
     return test_pop();
+  case length:
+    return test_length();
+  case capacity:
+    return test_capacity();
   case all:
     return test_new_str() + test_free_str();
   default:
@@ -61,12 +75,14 @@ char *
 getOption(int argc, char **argv)
 {
   if (argc <= 1) return "all";
-  if (!strncmp(argv[1], "-c", 2)) return "crt";
+  if (!strncmp(argv[1], "-cr", 3)) return "crt";
   if (!strncmp(argv[1], "-d", 2)) return "dst";
   if (!strncmp(argv[1], "-pu", 3)) return "pus";
   if (!strncmp(argv[1], "-po", 3)) return "pop";
   if (!strncmp(argv[1], "-ap", 3)) return "app";
   if (!strncmp(argv[1], "-j", 2)) return "jon";
+  if (!strncmp(argv[1], "-l", 2)) return "len";
+  if (!strncmp(argv[1], "-cp", 3)) return "cap";
   return "non";
 }
 
@@ -163,6 +179,24 @@ test_append(void)
   if (strlen(str1) != strlen(target))
     return FAIL;
   if (strncmp(str1, target, strlen(target))) return FAIL;
+
+  return SUCCESS;
+}
+
+int
+test_length(void)
+{
+  dstr str = ds_new(.contents="chaitanyanivsarkar");
+  if (ds_length(str) != 18) return FAIL;
+
+  return SUCCESS;
+}
+
+int
+test_capacity(void)
+{
+  dstr str = ds_new(.contents="hi");
+  if (ds_sizeof(str) != 16) return FAIL;
 
   return SUCCESS;
 }

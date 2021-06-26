@@ -153,3 +153,17 @@ ds_join(dstr dest, const dstr *str_arr, size_t len, dstr delim)
   
   return dest;
 }
+
+size_t
+ds_length(dstr str)
+{
+  struct ds_string *cont = get_container(str);
+  return cont->len;
+}
+
+size_t
+ds_sizeof(dstr str)
+{
+  struct ds_string *cont = get_container(str);
+  return cont->size;
+}

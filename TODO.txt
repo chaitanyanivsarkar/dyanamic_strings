@@ -1,11 +1,10 @@
 1. Add functions for creating and freeing strings -> DONE
-2. Add functions for push, pop, append and join
+2. Add functions for push, pop, append and join -> DONE
 3. Add a function for creating dynamic string from another string -> DONE
-4. Add a function for getting length, capacity
+4. Add a function for getting length, capacity -> DONE
 5. Add function for substring matching, compare, substring 
 6. Add a function for copying
 
 a. Once the testing code is mature move it to a seprate framework
-b. Add logging once mature
-c. Move everything to one header file
-d. make an array of function pointers for running all tests
+b. Move everything to one header file
+c. make an array of function pointers for running all tests
