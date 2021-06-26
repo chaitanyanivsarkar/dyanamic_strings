@@ -21,6 +21,23 @@ struct ds_new_args {
   char *contents;
 };
 
+static void
+__compute_lps_array(dstr pattern, size_t len_pat, int *lps)
+{
+  int len = 0;
+  lps[0] = 0;
+  size_t i = 1;
+  while (i < len_pat) {
+    if (pattern[i] == pattern[len]) {
+      ++len;
+      lps[i] = len;
+      ++i;
+    } else {
+      if (len != 0) len = lps[len - 1];
+      else lps[i++] = 0;
+    }
+  }
+}
 
 static void
 __fill_str(struct ds_string *new_str, const char *contents,
@@ -184,4 +201,62 @@ ds_copy(dstr str)
   memcpy(copy, cont, size);
   
   return copy->contents;
+}
+
+dstr
+ds_substr(dstr str, size_t begin, size_t len)
+{
+  struct ds_string *cont = get_container(str);
+  return ds_new(.len=len, .pos=begin, .contents=cont->contents);
+}
+
+size_t
+ds_contains(dstr text, dstr pattern)
+{
+  size_t len_txt = ds_length(text);
+  size_t len_pat = ds_length(pattern);
+
+  int lps[len_pat];
+  __compute_lps_array(pattern, len_pat, lps);
+
+  size_t i = 0, j = 0;
+  while (i < len_txt) {
+    if (pattern[j] == text[i]) {
+      ++i;
+      ++j;
+    }
+
+    if (j == len_pat) {
+      return i-j;
+    }
+
+    else if (i < len_txt && pattern[j] != text[i]) {
+      if (j != 0) j = lps[j-1];
+      else ++i;
+    }
+  }
+  
+  return len_txt;
+}
+
+int
+ds_cmp(dstr str_a, dstr str_b)
+{
+  struct ds_string *cont_a = get_container(str_a);
+  struct ds_string *cont_b = get_container(str_b);
+  size_t len_a = cont_a->len;
+  size_t len_b = cont_b->len;
+
+  size_t min_len = len_a < len_b ? len_a : len_b;
+  size_t i = 0;
+  while(i < min_len) {
+    if (cont_a->contents[i] == cont_b->contents[i]) ++i;
+    else if (cont_a->contents[i] > cont_b->contents[i]) return 1;
+    else return -1;
+  }
+
+  if (len_a > len_b) return 1;
+  if (len_b > len_a) return -1;
+
+  return 0;
 }

@@ -8,6 +8,7 @@
 enum Tests {create=10, destroy=20, push=30,
             append=40, pop=50, join=60,
 	    length=70, capacity=80, copy=90,
+	    substr=100, compare=110, contains=120, 
 	    all=0};
 enum Result {SUCCESS=0, FAIL=1};
 
@@ -20,6 +21,26 @@ int test_join(void);
 int test_length(void);
 int test_capacity(void);
 int test_copy(void);
+int test_substring(void);
+int test_compare(void);
+int test_contains(void);
+
+typedef int (*test_func)(void); 
+
+static test_func all_tests[] = {
+  test_new_str,
+  test_free_str,
+  test_push,
+  test_pop,
+  test_append,
+  test_join,
+  test_length,
+  test_capacity,
+  test_copy,
+  test_substring,
+  test_compare,
+  test_contains
+};
 
 enum Tests getTest(char *name)
 {
@@ -42,10 +63,25 @@ enum Tests getTest(char *name)
     return capacity;
   } else if (!strncmp(name, "cpy", 3)) {
     return copy;
+  } else if (!strncmp(name, "con", 3)) {
+    return contains;
+  } else if (!strncmp(name, "sub", 3)) {
+    return substr;
+  } else if (!strncmp(name, "cmp", 3)) {
+    return compare;
   } else if (!strncmp(name, "non", 3)) {
     return -2;
   }
   return all;
+}
+
+int run_all_tests() {
+  int res = 0;
+  for (size_t i = 0; i < (sizeof(all_tests)/sizeof(all_tests[0])); ++i) {
+    res += all_tests[i]();
+  }
+
+  return res;
 }
 
 int
@@ -70,11 +106,34 @@ selector(enum Tests sel)
     return test_capacity();
   case copy:
     return test_copy();
+  case contains:
+    return test_contains();
+  case substr:
+    return test_substring();
+  case compare:
+    return test_compare();
   case all:
     return test_new_str() + test_free_str();
   default:
     return 1;
   }
+}
+
+void
+print_help(void)
+{
+  printf("-cr: test create string\n");
+  printf("-d: test destroy string\n");
+  printf("-pu: test push string\n");
+  printf("-po: test pop string\n");
+  printf("-ap: test append string\n");
+  printf("-j: test join strings\n");
+  printf("-l: test length of string\n");
+  printf("-ca: test string capacity\n");
+  printf("-cp: test string copy\n");
+  printf("-cm: test string compare\n");
+  printf("-sb: test string substrong\n");
+  printf("-cn: test string contains\n");
 }
 
 char *
@@ -90,6 +149,13 @@ getOption(int argc, char **argv)
   if (!strncmp(argv[1], "-l", 2)) return "len";
   if (!strncmp(argv[1], "-ca", 3)) return "cap";
   if (!strncmp(argv[1], "-cp", 3)) return "cpy";
+  if (!strncmp(argv[1], "-cm", 3)) return "cmp";
+  if (!strncmp(argv[1], "-sb", 3)) return "sub";
+  if (!strncmp(argv[1], "-cn", 3)) return "con";
+  if (!strncmp(argv[1], "-h", 2)) {
+    print_help();
+    return "non";
+  } 
   return "non";
 }
 
@@ -97,7 +163,7 @@ int
 main (int argc, char **argv)
 {
   char *opt = getOption(argc, argv);
-  if (!strncmp(opt, "non", 3)) return 1;
+  if (!strncmp(opt, "non", 3)) return 0;
 
   enum Tests sel = getTest(opt);
   if (selector(sel) == 0) {
@@ -215,5 +281,47 @@ test_copy(void)
   dstr cp_str = ds_copy(str);
 
   if (strncmp(str, cp_str, ds_length(str))) return FAIL;
+  return SUCCESS;
+}
+
+int
+test_compare()
+{
+  dstr larger = ds_new(.contents="z");
+  dstr smaller = ds_new(.contents="aa");
+  dstr eq = ds_new(.contents="aa");
+  dstr mid = ds_new(.contents="aaa");
+
+  if (ds_cmp(larger, smaller) < 1) {
+    return FAIL;
+  }
+  if (ds_cmp(smaller, eq) != 0) {
+    return FAIL;
+  }
+  if (ds_cmp(smaller, mid) >= 0) {
+    return FAIL;
+  }
+  
+  return SUCCESS;
+}
+
+int
+test_substring()
+{
+  dstr text = ds_new(.contents="Alargestring");
+  dstr sub = ds_substr(text, 1, 5);
+
+  if (strncmp(sub, "large", 5)) return FAIL;
+  
+  return SUCCESS;
+}
+
+int test_contains()
+{
+  dstr text = ds_new(.contents="Alargestring");
+  dstr sub = ds_new(.contents="large");
+
+  if (ds_contains(text, sub) == ds_length(text)) return FAIL;
+  
   return SUCCESS;
 }
